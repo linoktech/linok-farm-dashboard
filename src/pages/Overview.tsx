@@ -197,11 +197,11 @@ export default function Overview() {
       <div className="panel">
         <div className="panel-header">
           <h3>Advanced Quality Analytics</h3>
-          <button className="btn secondary small">View Quality Dashboard</button>
+          <button className="btn secondary small" onClick={() => navigate('/quality')}>View Quality Dashboard</button>
         </div>
         <p className="text-muted">Real-time milk composition tracking with premium calculations</p>
         <div className="grid grid-4 mt-4">
-          <div className="card">
+          <div className="card kpi-card-clickable" onClick={() => navigate('/quality')}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px'}}>
               <div className="card-title">Avg Fat %</div>
               <Droplet size={18} style={{color: 'var(--warning)', opacity: 0.7}} />
@@ -209,7 +209,7 @@ export default function Overview() {
             <div className="kpi-value">{data.avgFat}</div>
             <div className="text-success">Above Target</div>
           </div>
-          <div className="card">
+          <div className="card kpi-card-clickable" onClick={() => navigate('/quality')}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px'}}>
               <div className="card-title">Avg Protein %</div>
               <TestTube size={18} style={{color: 'var(--accent)', opacity: 0.7}} />
@@ -217,7 +217,7 @@ export default function Overview() {
             <div className="kpi-value">{data.avgProtein}</div>
             <div className="text-success">Premium Quality</div>
           </div>
-          <div className="card">
+          <div className="card kpi-card-clickable" onClick={() => navigate('/quality')}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px'}}>
               <div className="card-title">Avg SCC</div>
               <Shield size={18} style={{color: 'var(--success)', opacity: 0.7}} />
@@ -225,7 +225,7 @@ export default function Overview() {
             <div className="kpi-value">{data.avgSCC}</div>
             <div className="text-success">Grade A</div>
           </div>
-          <div className="card">
+          <div className="card kpi-card-clickable" onClick={() => navigate('/quality')}>
             <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px'}}>
               <div className="card-title">Monthly Premium</div>
               <DollarSign size={18} style={{color: 'var(--success)', opacity: 0.7}} />
