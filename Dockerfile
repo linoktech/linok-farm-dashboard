@@ -18,6 +18,9 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
+
 # Copy custom nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
@@ -27,6 +30,9 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy and set up entrypoint script
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
+
+# Verify files exist
+RUN ls -la /usr/share/nginx/html && cat /etc/nginx/conf.d/default.conf
 
 # Start nginx
 EXPOSE 8080
