@@ -18,22 +18,45 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
-# Remove default nginx config
-RUN rm /etc/nginx/conf.d/default.conf
-
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
 # Copy built app from builder
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Copy and set up entrypoint script
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Create a simple nginx config that uses environment variable substitution
+RUN rm /etc/nginx/conf.d/default.conf
+COPY <<'EOF' /etc/nginx/templates/default.conf.template
+server {
+    listen ${PORT};
+    server_name _;
+    root /usr/share/nginx/html;
+    index index.html;
 
-# Verify files exist
-RUN ls -la /usr/share/nginx/html && cat /etc/nginx/conf.d/default.conf
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/javascript application/json;
 
-# Start nginx
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Cache static assets
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # SPA fallback
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+EOF
+
+# Set default PORT
+ENV PORT=8080
+
+# Start nginx with envsubst
 EXPOSE 8080
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["/bin/sh", "-c", "envsubst '$$PORT' < /etc/nginx/templates/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
